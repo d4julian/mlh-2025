@@ -1,10 +1,28 @@
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+import pickle
+from generate_vectors import GenerateVectors
 import os
-from dotenv import load_dotenv
 import pandas as pd
 
-load_dotenv()
-KAGGLE_API_KEY = os.getenv("KAGGLE_API_KEY")
+class Sentiment:
+    def __init__(self):
+        if not os.path.exists("backend/vectorizer.pkl"):
+            g = GenerateVectors()
+        self.vectorizer = pickle.load(open("backend/vectorizer.pkl", "rb"))
+        self.df = pd.read_csv("backend/data.csv")
+        self.df['success'] = (self.df['status'] == 'Active').astype(int)
+        self.df = self.df[["long_description", "success"]]
+        self.df.dropna(inplace=True)
+        self.matrix = self.vectorizer.transform(self.df["long_description"])
 
-df = pd.read_csv("startupdata.csv")
+    def predict_success(self, idea):
+        idea_vector = self.vectorizer.transform([idea])
+        similarities = cosine_similarity(idea_vector, self.matrix)
+        success = self.df["success"].values
+        weighted_success = np.dot(similarities, success) / np.sum(similarities)
 
-df.head()
+        return round(float(weighted_success[0] * 100), 2)
+if __name__ == "__main__":
+    s = Sentiment()
+    print(s.predict_success("A app that finds stocks with high growth potential"))
