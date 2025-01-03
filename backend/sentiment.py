@@ -25,4 +25,5 @@ class Sentiment:
         return round(float(weighted_success[0] * 100), 2)
 if __name__ == "__main__":
     s = Sentiment()
+    #print(s.predict_success("A web app that helps users find the best deals on flights using graphs and charts"))
     print(s.predict_success("A app that finds stocks with high growth potential"))
