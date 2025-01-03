@@ -7,10 +7,10 @@ import pandas as pd
 
 class Sentiment:
     def __init__(self):
-        if not os.path.exists("backend/vectorizer.pkl"):
+        if not os.path.exists("vectorizer.pkl"):
             g = GenerateVectors()
-        self.vectorizer = pickle.load(open("backend/vectorizer.pkl", "rb"))
-        self.df = pd.read_csv("backend/data.csv")
+        self.vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+        self.df = pd.read_csv("data.csv")
         self.df['success'] = (self.df['status'] == 'Active').astype(int)
         self.df = self.df[["long_description", "success"]]
         self.df.dropna(inplace=True)
