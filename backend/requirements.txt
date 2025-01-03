@@ -43,7 +43,6 @@ mesop==0.9.1
 multidict==6.1.0
 mypy-extensions==1.0.0
 narwhals==1.20.1
-numpy==2.1.1
 opencv-python==4.10.0.84
 opencv-python-headless==4.10.0.84
 ordered-set==4.1.0
@@ -86,3 +85,4 @@ webencodings==0.5.1
 Werkzeug==3.0.3
 WTForms==3.1.2
 yarl==1.13.1
+numpy==2.1.1
