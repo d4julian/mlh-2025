@@ -7,6 +7,7 @@ import { useState } from "react";
 export default function App() {
   const [generatedText, setGeneratedText] = useState(null);
   const [puzzlePieces, setPuzzlePieces] = useState([]);
+  const [disabledItems, setDisabledItems] = useState([]); // Initialize as empty array
 
   const handleCategorizeSuccess = (data) => {
     setGeneratedText(data);
@@ -16,18 +17,25 @@ export default function App() {
     <div className="bg-gray-800">
       <Header />
       <Form onCategorizeSuccess={handleCategorizeSuccess} />
-      {generatedText && (
-        <Cards
-          generatedText={generatedText}
-          puzzlePieces={puzzlePieces}
-          setPuzzlePieces={setPuzzlePieces}
-        />
-      )}
-      <PuzzleBoard
-        puzzlePieces={puzzlePieces}
-        setPuzzlePieces={setPuzzlePieces}
-      />
-
+      <AnimatePresence>
+        {generatedText && (
+          <>
+            <Cards
+              generatedText={generatedText}
+              puzzlePieces={puzzlePieces}
+              disabledItems={disabledItems}
+              setDisabledItems={setDisabledItems}
+              setPuzzlePieces={setPuzzlePieces}
+            />
+            <PuzzleBoard
+              puzzlePieces={puzzlePieces}
+              setPuzzlePieces={setPuzzlePieces}
+              disabledItems={disabledItems}
+              setDisabledItems={setDisabledItems}
+            />
+          </>
+        )}
+      </AnimatePresence>
       <div className="h-20"></div>
     </div>
   );

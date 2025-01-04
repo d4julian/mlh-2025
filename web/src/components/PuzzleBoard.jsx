@@ -1,12 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { motion } from "motion/react";
 import PuzzlePiece from "./PuzzlePiece";
 
 const SNAP_DISTANCE = 50; // Distance in pixels when pieces will snap together
 
-export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
+export default function PuzzleBoard({
+  puzzlePieces,
+  setPuzzlePieces,
+  disabledItems,
+  setDisabledItems,
+}) {
   const [activePiece, setActivePiece] = useState(null);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [sentence, setSentence] = useState("");
+  const trashRef = useRef(null);
 
   useEffect(() => {
     const connectedPieces = findConnectedPieces();
@@ -106,9 +113,36 @@ export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
     );
   };
   const handleMouseUp = () => {
-    setActivePiece(null);
-  };
+    if (activePiece && trashRef.current) {
+      const trashBounds = trashRef.current.getBoundingClientRect();
+      const pieceBounds = {
+        x: activePiece.x,
+        y: activePiece.y,
+        width: getPieceWidth(),
+        height: getPieceWidth() * 0.95,
+      };
 
+      // Check if the piece overlaps the TRASH area
+      const isOverTrash =
+        pieceBounds.x + pieceBounds.width > trashBounds.left &&
+        pieceBounds.x < trashBounds.right &&
+        pieceBounds.y + pieceBounds.height > trashBounds.top &&
+        pieceBounds.y < trashBounds.bottom;
+
+      if (isOverTrash) {
+        // Remove the piece
+        setPuzzlePieces((prevPieces) =>
+          prevPieces.filter((piece) => piece.id !== activePiece.id)
+        );
+
+        setDisabledItems((prev) =>
+          prev.filter((item) => item !== activePiece.text)
+        );
+      }
+    }
+
+    setActivePiece(null); // Clear active piece
+  };
   return (
     <div className="border-4 rounded-lg border-gray-900 bg-gray-700 mx-10">
       <div
@@ -125,6 +159,13 @@ export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
             onMouseDown={(e) => handleMouseDown(e, piece)}
           />
         ))}
+        <div
+          className="absolute right-0 text-white bg-red-500 w-32 h-12 flex items-center justify-center"
+          style={{ bottom: "40px", backgroundColor: "red" }}
+          ref={trashRef}
+        >
+          TRASH
+        </div>
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-900 text-gray-50">
           {sentence}
         </div>
