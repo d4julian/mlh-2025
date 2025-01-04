@@ -1,37 +1,55 @@
-export default function Cards({ puzzlePieces, setPuzzlePieces }) {
-  const cards = [
-    {
-      title: "I want...",
-      items: [
-        "E-Commerce",
-        "Social Media",
-        "To provide personalized customer experiences through social media and email marketing",
-      ],
+import { motion } from "motion/react";
+
+export default function Cards({
+  puzzlePieces,
+  setPuzzlePieces,
+  generatedText,
+}) {
+  if (!generatedText) return null;
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
     },
-    {
-      title: "With...",
-      items: ["User Authentication", "Data Visualization", "API Integration"],
-    },
-    {
-      title: "Using...",
-      items: ["React", "Tailwind CSS", "Django"],
-    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+  };
+
+  // Reordered categories with desired sequence
+  const renamedCategories = [
+    ["I want...", generatedText["Purposes"] || []],
+    ["With...", generatedText["Functionality/Features"] || []],
+    ["Using...", generatedText["Frameworks/Tech Stack"] || []],
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-6 mx-auto max-w-7xl place-items-center mb-6">
-      {cards.map((card, index) => (
-        <div
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      exit="hidden"
+      className="grid grid-cols-3 gap-4 mx-auto max-w-7xl mb-6"
+    >
+      {renamedCategories.map(([category, items], index) => (
+        <motion.div
           key={index}
-          className="max-w-xs rounded-md shadow-md bg-gray-300 text-gray-800"
+          variants={item}
+          className="rounded-md shadow-md bg-gray-300 text-gray-800 w-full"
         >
           <div className="flex flex-col justify-between p-6 space-y-8">
             <div className="space-y-2">
               <h2 className="text-xl font-semibold tracking-wide">
-                {card.title}
+                {category}
               </h2>
-              <div className="flex flex-col gap-y-1 min-w-52">
-                {card.items.map((item, i) => (
+              <div className="flex flex-col gap-y-1">
+                {items.map((item, i) => (
                   <button
                     onClick={(e) => {
                       setPuzzlePieces([
@@ -55,7 +73,7 @@ export default function Cards({ puzzlePieces, setPuzzlePieces }) {
                       e.target.disabled = true;
                     }}
                     key={i}
-                    className="bg-white border rounded-md py-1 text-center hover:bg-purple-200 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-white border rounded-md py-1 text-center hover:bg-purple-200 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed px-2"
                   >
                     {item}
                   </button>
@@ -63,8 +81,8 @@ export default function Cards({ puzzlePieces, setPuzzlePieces }) {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion } from "motion/react";
 import PuzzlePiece from "./PuzzlePiece";
 
 const SNAP_DISTANCE = 50;
@@ -105,7 +106,12 @@ export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
   };
 
   return (
-    <div className="border-4 rounded-lg border-gray-900 bg-gray-700 mx-10">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.6 }} // Delay to appear after cards
+      className="border-4 rounded-lg border-gray-900 bg-gray-700 mx-10"
+    >
       <div
         className="relative w-full h-[80vh]"
         onMouseMove={handleMouseMove}
@@ -124,6 +130,6 @@ export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
           {sentence}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

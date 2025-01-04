@@ -23,10 +23,11 @@ class Categorize:
             Your task is to respond in JSON format with the fields 'Frameworks/Tech Stack', 'Functionality/Features', and 'Purposes', and each field should output an array.
 
             Please include:
-            - All popular Frameworks/Tech Stack that could be used in a project.
-            - Different Functionality/Features that could be implemented.
-            - Various "Purposes" that the project could serve.
+            - Ten popular Frameworks/Tech Stack that could be used in a project.
+            - Ten Functionality/Features that could be implemented.
+            - Five "Purposes" that the project could serve.
 
+            Dont repeat the same item in the same field.
             The three fields should form a complete sentence describing a project idea.
             Do not use any new line characters or any whitespace at all on the JSON output.
             Input: {user_prompt}
@@ -41,6 +42,7 @@ class Categorize:
             )
             generated_output = outputs[0]["generated_text"][-1]["content"]
             print(generated_output)
+
 
             # Strip extra characters and parse the JSON
             start_index = generated_output.find("{")

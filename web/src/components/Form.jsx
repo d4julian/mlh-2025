@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import Button from "./Button";
 import useCategorize from "../hooks/useCategorize";
 
-export default function Form() {
+export default function Form({ onCategorizeSuccess }) {
   const [inputText, setInputText] = useState("");
-  const { generatedText, fetchCategorize, loading, error } = useCategorize();
+  const { fetchCategorize, loading, error } = useCategorize();
 
   const handleChange = (e) => {
     setInputText(e.target.value);
@@ -15,8 +15,9 @@ export default function Form() {
     const endpoint = "http://127.0.0.1:8000/api/categorize";
 
     try {
-      await fetchCategorize(endpoint, inputText);
+      const data = await fetchCategorize(endpoint, inputText);
       console.log("[LOG] fetchCategorize call completed");
+      onCategorizeSuccess(data);
     } catch (err) {
       console.error("[ERROR]", err);
     }
@@ -24,6 +25,9 @@ export default function Form() {
 
   return (
     <section className="p-6 bg-gray-800 text-gray-50">
+      <h2 className="text-3xl font-bold text-white pb-10 mx-auto text-center">
+        Type in a prompt to get started
+      </h2>
       <form
         noValidate=""
         action=""
@@ -52,23 +56,6 @@ export default function Form() {
       </form>
 
       {error && <p style={{ color: "red" }}>Error: {error}</p>}
-
-      {generatedText && (
-        <div>
-          <h3>Generated Response:</h3>
-          <p>
-            <strong>Frameworks/Tech Stack:</strong>{" "}
-            {generatedText["Frameworks/Tech Stack"].join(", ")}
-          </p>
-          <p>
-            <strong>Functionality/Features:</strong>{" "}
-            {generatedText["Functionality/Features"].join(", ")}
-          </p>
-          <p>
-            <strong>Purpose:</strong> {generatedText["Purpose"].join(", ")}
-          </p>
-        </div>
-      )}
     </section>
   );
 }
