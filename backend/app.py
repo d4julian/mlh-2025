@@ -19,11 +19,7 @@ if st.button("Generate"):
     if user_prompt:
         with st.spinner("Generating..."):
             result = categorize.categorize_prompt(user_prompt)
-
         st.success("Idea generated successfully!")
-        st.write(result["Frameworks/Tech Stack"])
-        st.write(result["Functionality/Features"])
-        st.write(result["Purpose"])
         st.json(result)
     else:
         st.warning("Please enter a prompt first!")
