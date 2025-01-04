@@ -153,7 +153,16 @@ export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6 }} // Delay to appear after cards
-      className="border-4 rounded-lg border-gray-900 bg-gray-700 mx-10"
+      className="border-4 rounded-lg border-gray-900 bg-gray-700 mx-10 striped-background"
+      style={{
+        background: `repeating-linear-gradient(
+          45deg,
+          rgba(31, 41, 55, 0.7),
+          rgba(31, 41, 55, 0.7) 10px,
+          rgba(55, 65, 81, 0.7) 10px,
+          rgba(55, 65, 81, 0.7) 20px
+        )`,
+      }}
     >
       <div
         className="relative w-full h-[80vh]"
