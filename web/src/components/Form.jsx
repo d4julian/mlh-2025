@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Button from "./Button";
 import useCategorize from "../hooks/useCategorize";
 
 export default function Form({ onCategorizeSuccess }) {
@@ -12,6 +11,7 @@ export default function Form({ onCategorizeSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const endpoint = "http://127.0.0.1:8000/api/categorize";
 
     try {
@@ -48,10 +48,18 @@ export default function Form({ onCategorizeSuccess }) {
             />
           </div>
 
-          <Button
-            text={loading ? "Generating..." : "Generate"}
+          <button
+            type="button"
+            className="px-8 py-3 font-semibold border rounded border-gray-100 text-gray-100 hover:border-violet-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleSubmit}
-          />
+            disabled={loading || !inputText}
+          >
+            {loading ? "Generating..." : "Generate"}
+          </button>
+
+          {loading && (
+            <div className="w-12 h-12 border-4 border-dashed rounded-full animate-spin border-violet-600" />
+          )}
         </fieldset>
       </form>
 

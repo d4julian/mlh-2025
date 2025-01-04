@@ -2,7 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import PuzzlePiece from "./PuzzlePiece";
 
-const SNAP_DISTANCE = 50; // Distance in pixels when pieces will snap together
+const SNAP_DISTANCE = 50;
+const getPieceWidth = () => {
+  const piece = document.querySelector(".puzzle-piece svg");
+  return (piece?.clientWidth || 400) - 84;
+};
 
 export default function PuzzleBoard({
   puzzlePieces,
@@ -15,24 +19,66 @@ export default function PuzzleBoard({
   const [sentence, setSentence] = useState("");
   const trashRef = useRef(null);
 
+  const constructOrderedSentence = (pieces) => {
+    if (!pieces.length) return "";
+
+    let result = "";
+    let currentType = null;
+    let isFirstOfType = true;
+
+    pieces.forEach((piece, index) => {
+      if (currentType === null) {
+        // First piece overall
+        if (piece.type === 0) {
+          result += `I want ${piece.text.toLowerCase()}`;
+        }
+        currentType = piece.type;
+      } else if (piece.type !== currentType) {
+        // New type
+        isFirstOfType = true;
+        currentType = piece.type;
+        switch (piece.type) {
+          case 0:
+            result += ` and ${piece.text.toLowerCase()}`;
+            break;
+          case 1:
+            result += ` with ${piece.text.toLowerCase()}`;
+            break;
+          case 2:
+            result += ` using ${piece.text.toLowerCase()}`;
+            break;
+          default:
+            break;
+        }
+      } else {
+        // Same type as previous
+        result += isFirstOfType
+          ? `, ${piece.text.toLowerCase()}`
+          : `, ${piece.text.toLowerCase()}`;
+      }
+      isFirstOfType = false;
+    });
+
+    return result;
+  };
+
   useEffect(() => {
     const connectedPieces = findConnectedPieces();
-    const newSentence = connectedPieces.map((piece) => piece.text).join(" ");
+    const newSentence = constructOrderedSentence(connectedPieces);
     setSentence(newSentence);
   }, [puzzlePieces]);
 
   const findConnectedPieces = () => {
+    const pieceWidth = getPieceWidth();
     const connected = [];
     let leftmostPiece = null;
 
-    // Find the leftmost piece
     puzzlePieces.forEach((piece) => {
       if (!leftmostPiece || piece.x < leftmostPiece.x) {
-        // Check if this piece is connected to others
         const hasConnection = puzzlePieces.some(
           (p) =>
             p.id !== piece.id &&
-            Math.abs(p.x - (piece.x + 200)) < SNAP_DISTANCE &&
+            Math.abs(p.x - (piece.x + pieceWidth)) < SNAP_DISTANCE &&
             Math.abs(p.y - piece.y) < SNAP_DISTANCE
         );
         if (hasConnection) {
@@ -41,14 +87,13 @@ export default function PuzzleBoard({
       }
     });
 
-    // Follow the chain of connections
     let currentPiece = leftmostPiece;
     while (currentPiece) {
       connected.push(currentPiece);
       currentPiece = puzzlePieces.find(
         (p) =>
           p.id !== currentPiece.id &&
-          Math.abs(p.x - (currentPiece.x + 200)) < SNAP_DISTANCE &&
+          Math.abs(p.x - (currentPiece.x + pieceWidth)) < SNAP_DISTANCE &&
           Math.abs(p.y - currentPiece.y) < SNAP_DISTANCE
       );
     }
@@ -70,37 +115,30 @@ export default function PuzzleBoard({
     let newX = e.clientX - offset.x;
     let newY = e.clientY - offset.y;
 
-    // Add boundaries to keep pieces within the board
-    // Get board dimensions from the container
     const board = document.querySelector(".relative");
     const BOARD_WIDTH = board?.clientWidth || 1000;
     const BOARD_HEIGHT = board?.clientHeight || 500;
 
-    // Get piece dimensions from first piece (assuming all pieces are same size)
-    const piece = document.querySelector(".puzzle-piece");
-    const PIECE_WIDTH = piece?.clientWidth || 200;
-    const PIECE_HEIGHT = piece?.clientHeight || 100;
+    const pieceWidth = getPieceWidth();
+    const PIECE_HEIGHT = pieceWidth * 0.95;
 
-    newX = Math.max(0, Math.min(newX, BOARD_WIDTH - PIECE_WIDTH));
+    newX = Math.max(0, Math.min(newX, BOARD_WIDTH - pieceWidth));
     newY = Math.max(0, Math.min(newY, BOARD_HEIGHT - PIECE_HEIGHT));
 
-    // Simplified snapping logic - any piece can connect horizontally
     puzzlePieces.forEach((piece) => {
       if (piece.id !== activePiece.id) {
-        // Check right side connection
         if (
-          Math.abs(newX - (piece.x + 200)) < SNAP_DISTANCE &&
+          Math.abs(newX - (piece.x + pieceWidth)) < SNAP_DISTANCE &&
           Math.abs(newY - piece.y) < SNAP_DISTANCE
         ) {
-          newX = piece.x + PIECE_WIDTH;
+          newX = piece.x + pieceWidth;
           newY = piece.y;
         }
-        // Check left side connection
         if (
-          Math.abs(newX - (piece.x - 200)) < SNAP_DISTANCE &&
+          Math.abs(newX - (piece.x - pieceWidth)) < SNAP_DISTANCE &&
           Math.abs(newY - piece.y) < SNAP_DISTANCE
         ) {
-          newX = piece.x - PIECE_WIDTH;
+          newX = piece.x - pieceWidth;
           newY = piece.y;
         }
       }
@@ -144,9 +182,23 @@ export default function PuzzleBoard({
     setActivePiece(null); // Clear active piece
   };
   return (
-    <div className="border-4 rounded-lg border-gray-900 bg-gray-700 mx-10">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.6 }} // Delay to appear after cards
+      className="border-4 rounded-lg border-gray-900 bg-gray-700 mx-10 striped-background"
+      style={{
+        background: `repeating-linear-gradient(
+          45deg,
+          rgba(31, 41, 55, 0.7),
+          rgba(31, 41, 55, 0.7) 10px,
+          rgba(55, 65, 81, 0.7) 10px,
+          rgba(55, 65, 81, 0.7) 20px
+        )`,
+      }}
+    >
       <div
-        className="relative w-full h-[500px]"
+        className="relative w-full h-[80vh]"
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
@@ -170,6 +222,6 @@ export default function PuzzleBoard({
           {sentence}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

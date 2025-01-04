@@ -25,7 +25,7 @@ class Categorize:
             Please include:
             - Ten popular Frameworks/Tech Stack that could be used in a project.
             - Ten Functionality/Features that could be implemented.
-            - Five "Purposes" that the project could serve.
+            - Five "Purposes" that the project could serve, always start with "To".
 
             Dont repeat the same item in the same field.
             The three fields should form a complete sentence describing a project idea.

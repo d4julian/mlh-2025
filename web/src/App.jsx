@@ -3,6 +3,7 @@ import Form from "./components/Form";
 import PuzzleBoard from "./components/PuzzleBoard";
 import Cards from "./components/Cards";
 import { useState } from "react";
+import { AnimatePresence } from "motion/react";
 
 export default function App() {
   const [generatedText, setGeneratedText] = useState(null);
@@ -14,7 +15,7 @@ export default function App() {
   };
 
   return (
-    <div className="bg-gray-800">
+    <div className="bg-gray-800 h-screen overflow-y-scroll">
       <Header />
       <Form onCategorizeSuccess={handleCategorizeSuccess} />
       <AnimatePresence>
