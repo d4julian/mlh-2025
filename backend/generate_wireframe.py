@@ -1,13 +1,10 @@
-import torch
-from diffusers import DiffusionPipeline
+from huggingface_hub import InferenceClient
+import os
+from dotenv import load_dotenv
+load_dotenv()
+client = InferenceClient("jkeisling/type-design-website", token=os.getenv("HUGGINGFACE_TOKEN"))
 
-pipe = DiffusionPipeline.from_pretrained("black-forest-labs/FLUX.1-dev")
-pipe.load_lora_weights("jkeisling/type-design-website")
-
-device = "cuda" if torch.cuda.is_available() else "cpu"
-pipe.to(device)
-
-prompt = "A web app that helps users find the best deals on flights using graphs and charts"
-image = pipe(prompt).images[0]
+# output is a PIL.Image object
+image = client.text_to_image("tpwlf_pg, A restaurant website that helps users find the best deals on food using graphs and charts")
 
 image.show()
