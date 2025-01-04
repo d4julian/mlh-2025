@@ -1,14 +1,29 @@
 import streamlit as st
 from sentiment import Sentiment
+from categorize import Categorize
 
 st.title("Hackathon Idea Generator")
 
-user_prompt = st.text_input("Enter your prompt:", "")
+
+@st.cache_resource
+def load_data():
+    return Categorize()
+
+
+categorize = load_data()
 sentiment = Sentiment()
+
+user_prompt = st.text_input("Enter your prompt:", "")
 
 if st.button("Generate"):
     if user_prompt:
-        st.write("You entered:", user_prompt)
-        #TODO: Add the code to generate the prompt here
+        with st.spinner("Generating..."):
+            result = categorize.categorize_prompt(user_prompt)
+
+        st.success("Idea generated successfully!")
+        st.write(result["Frameworks/Tech Stack"])
+        st.write(result["Functionality/Features"])
+        st.write(result["Purpose"])
+        st.json(result)
     else:
         st.warning("Please enter a prompt first!")
