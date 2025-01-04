@@ -1,10 +1,13 @@
 import { motion } from "motion/react";
+import { useState } from "react";
 
 export default function Cards({
   puzzlePieces,
   setPuzzlePieces,
   generatedText,
 }) {
+  const [disabledItems, setDisabledItems] = useState([]);
+
   if (!generatedText) return null;
 
   const container = {
@@ -60,7 +63,14 @@ export default function Cards({
                           y: Math.random() * 300,
                           type: index,
                           text: item,
-                          color: getRandomColor(),
+                          color:
+                            index === 0
+                              ? "green"
+                              : index === 1
+                              ? "red"
+                              : index === 2
+                              ? "blue"
+                              : "white",
                         },
                       ]);
                       setDisabledItems((prev) => [...prev, item]); // Mark as disabled
@@ -68,19 +78,6 @@ export default function Cards({
                     }}
                     key={i}
                     disabled={disabledItems.includes(item)}
-                          color:
-                            index == 0
-                              ? "green"
-                              : index == 1
-                              ? "red"
-                              : index == 2
-                              ? "blue"
-                              : "white",
-                        },
-                      ]);
-                      e.target.disabled = true;
-                    }}
-                    key={i}
                     className="bg-white border rounded-md py-1 text-center hover:bg-purple-200 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed px-2"
                   >
                     {item}
