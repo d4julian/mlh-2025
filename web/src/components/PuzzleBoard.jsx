@@ -13,9 +13,52 @@ export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [sentence, setSentence] = useState("");
 
+  const constructOrderedSentence = (pieces) => {
+    if (!pieces.length) return "";
+
+    let result = "";
+    let currentType = null;
+    let isFirstOfType = true;
+
+    pieces.forEach((piece, index) => {
+      if (currentType === null) {
+        // First piece overall
+        if (piece.type === 0) {
+          result += `I want ${piece.text.toLowerCase()}`;
+        }
+        currentType = piece.type;
+      } else if (piece.type !== currentType) {
+        // New type
+        isFirstOfType = true;
+        currentType = piece.type;
+        switch (piece.type) {
+          case 0:
+            result += ` and ${piece.text.toLowerCase()}`;
+            break;
+          case 1:
+            result += ` with ${piece.text.toLowerCase()}`;
+            break;
+          case 2:
+            result += ` using ${piece.text.toLowerCase()}`;
+            break;
+          default:
+            break;
+        }
+      } else {
+        // Same type as previous
+        result += isFirstOfType
+          ? `, ${piece.text.toLowerCase()}`
+          : `, ${piece.text.toLowerCase()}`;
+      }
+      isFirstOfType = false;
+    });
+
+    return result;
+  };
+
   useEffect(() => {
     const connectedPieces = findConnectedPieces();
-    const newSentence = connectedPieces.map((piece) => piece.text).join(" ");
+    const newSentence = constructOrderedSentence(connectedPieces);
     setSentence(newSentence);
   }, [puzzlePieces]);
 

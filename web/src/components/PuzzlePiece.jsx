@@ -17,7 +17,7 @@ export default function PuzzlePiece({ piece, isActive, onMouseDown }) {
           id="svg"
           version="1.1"
           xmlns="http://www.w3.org/2000/svg"
-          xmlns:xlink="http://www.w3.org/1999/xlink"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
           viewBox="0, 0, 400,381.3333333333333"
         >
           <g id="svgg">
