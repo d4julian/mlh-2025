@@ -58,8 +58,6 @@ async def generate_text(request: PromptRequest):
 
     try:
         result = categorize.categorize_prompt(request.prompt)
-        print(f"[LOG] Generated result: {result}")  # Log the generated result
-        # Add your LLaMA model inference code here
         return JSONResponse(content=result)
     except Exception as e:
         print(f"[ERROR] Error generating result: {e}")  # Log any errors

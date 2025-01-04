@@ -54,9 +54,19 @@ export default function Form() {
       {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
       {generatedText && (
-        <div className="mt-4">
-          <h3>Generated JSON:</h3>
-          <pre>{JSON.stringify(generatedText, null, 2)}</pre>
+        <div>
+          <h3>Generated Response:</h3>
+          <p>
+            <strong>Frameworks/Tech Stack:</strong>{" "}
+            {generatedText["Frameworks/Tech Stack"].join(", ")}
+          </p>
+          <p>
+            <strong>Functionality/Features:</strong>{" "}
+            {generatedText["Functionality/Features"].join(", ")}
+          </p>
+          <p>
+            <strong>Purpose:</strong> {generatedText["Purpose"].join(", ")}
+          </p>
         </div>
       )}
     </section>
