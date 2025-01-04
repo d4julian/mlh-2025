@@ -212,11 +212,10 @@ export default function PuzzleBoard({
           />
         ))}
         <div
-          className="absolute right-0 text-white bg-red-500 w-32 h-12 flex items-center justify-center"
-          style={{ bottom: "40px", backgroundColor: "red" }}
+          className="absolute right-0 text-white bg-red-500 w-14 h-14 flex items-center justify-center"
           ref={trashRef}
         >
-          TRASH
+          &#128465;
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-900 text-gray-50">
           {sentence}

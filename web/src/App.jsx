@@ -1,4 +1,3 @@
-import Header from "./components/Header";
 import Form from "./components/Form";
 import PuzzleBoard from "./components/PuzzleBoard";
 import Cards from "./components/Cards";
@@ -16,7 +15,6 @@ export default function App() {
 
   return (
     <div className="bg-gray-800 h-screen overflow-y-scroll">
-      <Header />
       <Form onCategorizeSuccess={handleCategorizeSuccess} />
       <AnimatePresence>
         {generatedText && (

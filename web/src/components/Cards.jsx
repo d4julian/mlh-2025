@@ -5,8 +5,9 @@ export default function Cards({
   puzzlePieces,
   setPuzzlePieces,
   generatedText,
+  disabledItems,
+  setDisabledItems,
 }) {
-  const [disabledItems, setDisabledItems] = useState([]);
 
   if (!generatedText) return null;
 
