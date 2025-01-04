@@ -4,32 +4,35 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional, Dict
 import os
-import json
 from datetime import datetime
 
 # Import your existing modules
 # Adjust these imports based on your actual module structure
-#from mongodb import MongoDB  # Your database operations
+# from mongodb import MongoDB  # Your database operations
 from sentiment import Sentiment  # Your sentiment analysis
 from generate_wireframe import GenerateWireframe  # Your image generation
+from categorize import Categorize  # Your LLaMA model
+
 # Add your LLaMA model import here
 
 app = FastAPI()
 
 sentiment = Sentiment()
 generate = GenerateWireframe()
+categorize = Categorize()
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Initialize your MongoDB connection
-#db = MongoDB()  # Adjust based on your MongoDB class implementation
+# db = MongoDB()  # Adjust based on your MongoDB class implementation
+
 
 # Request/Response Models
 class PromptRequest(BaseModel):
@@ -37,23 +40,31 @@ class PromptRequest(BaseModel):
     max_length: Optional[int] = 1024
     temperature: Optional[float] = 0.7
 
+
 class DataRequest(BaseModel):
     query: Dict
     limit: Optional[int] = 10
+
 
 class AnalysisRequest(BaseModel):
     text: str
     options: Optional[Dict] = {}
 
+
 # LLaMA Routes
-@app.post("/api/generate")
+@app.post("/api/categorize")
 async def generate_text(request: PromptRequest):
+    print(f"[LOG] Received prompt: {request.prompt}")  # Log the incoming prompt
+
     try:
+        result = categorize.categorize_prompt(request.prompt)
+        print(f"[LOG] Generated result: {result}")  # Log the generated result
         # Add your LLaMA model inference code here
-        response = {"generated_text": "LLaMA response here"}  # Replace with actual model call
-        return JSONResponse(content=response)
+        return JSONResponse(content=result)
     except Exception as e:
+        print(f"[ERROR] Error generating result: {e}")  # Log any errors
         raise HTTPException(status_code=500, detail=str(e))
+
 
 # Data Routes
 @app.post("/api/data/query")
@@ -64,6 +75,7 @@ async def query_data(request: DataRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/api/data/insert")
 async def insert_data(data: Dict):
     try:
@@ -71,6 +83,7 @@ async def insert_data(data: Dict):
         return JSONResponse(content={"inserted_id": str(result)})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 # Analysis Routes
 @app.post("/api/analyze/sentiment")
@@ -81,6 +94,7 @@ async def analyze_text_sentiment(request: AnalysisRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/api/analyze/embeddings")
 async def generate_text_embedding(request: AnalysisRequest):
     try:
@@ -89,9 +103,11 @@ async def generate_text_embedding(request: AnalysisRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 # Image Routes
 IMAGE_DIR = "backend/images"
 os.makedirs(IMAGE_DIR, exist_ok=True)
+
 
 @app.get("/api/images/{image_name}")
 async def get_image(prompt: str):
@@ -100,11 +116,14 @@ async def get_image(prompt: str):
         raise HTTPException(status_code=404, detail="Image not found")
     return FileResponse(path)
 
+
 # Health Check
 @app.get("/api/health")
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
