@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Button from "./Button";
 import useCategorize from "../hooks/useCategorize";
 
 export default function Form({ onCategorizeSuccess }) {
