@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 const useCategorize = () => {
-  const [generatedText, setGeneratedText] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -9,7 +8,7 @@ const useCategorize = () => {
     setLoading(true);
     setError(null);
 
-    console.log("[LOG] Sending prompt to backend"); // Log input
+    console.log("[LOG] Sending prompt to backend");
 
     try {
       const response = await fetch(endpoint, {
@@ -25,15 +24,16 @@ const useCategorize = () => {
       }
 
       const data = await response.json();
-      setGeneratedText(data);
+      return data; // Just return the data, no need to set local state
     } catch (err) {
       setError(err.message);
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  return { generatedText, fetchCategorize, loading, error };
+  return { fetchCategorize, loading, error }; // Removed generatedText from return
 };
 
 export default useCategorize;
