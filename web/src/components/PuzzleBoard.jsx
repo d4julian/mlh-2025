@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import PuzzlePiece from "./PuzzlePiece";
 
-const SNAP_DISTANCE = 50; // Distance in pixels when pieces will snap together
+const SNAP_DISTANCE = 50;
+const getPieceWidth = () => {
+  const piece = document.querySelector(".puzzle-piece svg");
+  return (piece?.clientWidth || 400) - 84;
+};
 
 export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
   const [activePiece, setActivePiece] = useState(null);
@@ -15,17 +19,16 @@ export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
   }, [puzzlePieces]);
 
   const findConnectedPieces = () => {
+    const pieceWidth = getPieceWidth();
     const connected = [];
     let leftmostPiece = null;
 
-    // Find the leftmost piece
     puzzlePieces.forEach((piece) => {
       if (!leftmostPiece || piece.x < leftmostPiece.x) {
-        // Check if this piece is connected to others
         const hasConnection = puzzlePieces.some(
           (p) =>
             p.id !== piece.id &&
-            Math.abs(p.x - (piece.x + 200)) < SNAP_DISTANCE &&
+            Math.abs(p.x - (piece.x + pieceWidth)) < SNAP_DISTANCE &&
             Math.abs(p.y - piece.y) < SNAP_DISTANCE
         );
         if (hasConnection) {
@@ -34,14 +37,13 @@ export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
       }
     });
 
-    // Follow the chain of connections
     let currentPiece = leftmostPiece;
     while (currentPiece) {
       connected.push(currentPiece);
       currentPiece = puzzlePieces.find(
         (p) =>
           p.id !== currentPiece.id &&
-          Math.abs(p.x - (currentPiece.x + 200)) < SNAP_DISTANCE &&
+          Math.abs(p.x - (currentPiece.x + pieceWidth)) < SNAP_DISTANCE &&
           Math.abs(p.y - currentPiece.y) < SNAP_DISTANCE
       );
     }
@@ -63,37 +65,30 @@ export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
     let newX = e.clientX - offset.x;
     let newY = e.clientY - offset.y;
 
-    // Add boundaries to keep pieces within the board
-    // Get board dimensions from the container
     const board = document.querySelector(".relative");
     const BOARD_WIDTH = board?.clientWidth || 1000;
     const BOARD_HEIGHT = board?.clientHeight || 500;
 
-    // Get piece dimensions from first piece (assuming all pieces are same size)
-    const piece = document.querySelector(".puzzle-piece");
-    const PIECE_WIDTH = piece?.clientWidth || 200;
-    const PIECE_HEIGHT = piece?.clientHeight || 100;
+    const pieceWidth = getPieceWidth();
+    const PIECE_HEIGHT = pieceWidth * 0.95;
 
-    newX = Math.max(0, Math.min(newX, BOARD_WIDTH - PIECE_WIDTH));
+    newX = Math.max(0, Math.min(newX, BOARD_WIDTH - pieceWidth));
     newY = Math.max(0, Math.min(newY, BOARD_HEIGHT - PIECE_HEIGHT));
 
-    // Simplified snapping logic - any piece can connect horizontally
     puzzlePieces.forEach((piece) => {
       if (piece.id !== activePiece.id) {
-        // Check right side connection
         if (
-          Math.abs(newX - (piece.x + 200)) < SNAP_DISTANCE &&
+          Math.abs(newX - (piece.x + pieceWidth)) < SNAP_DISTANCE &&
           Math.abs(newY - piece.y) < SNAP_DISTANCE
         ) {
-          newX = piece.x + PIECE_WIDTH;
+          newX = piece.x + pieceWidth;
           newY = piece.y;
         }
-        // Check left side connection
         if (
-          Math.abs(newX - (piece.x - 200)) < SNAP_DISTANCE &&
+          Math.abs(newX - (piece.x - pieceWidth)) < SNAP_DISTANCE &&
           Math.abs(newY - piece.y) < SNAP_DISTANCE
         ) {
-          newX = piece.x - PIECE_WIDTH;
+          newX = piece.x - pieceWidth;
           newY = piece.y;
         }
       }
@@ -112,7 +107,7 @@ export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
   return (
     <div className="border-4 rounded-lg border-gray-900 bg-gray-700 mx-10">
       <div
-        className="relative w-full h-[500px]"
+        className="relative w-full h-[80vh]"
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
