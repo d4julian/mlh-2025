@@ -1,7 +1,7 @@
 const CircularProgress = ({ percentage }) => {
     return (
         <>
-            <div className="relative size-52 mt-4 mx-auto">
+            <div className="relative size-52 my-4 mx-auto">
                 <svg className="size-full -rotate-90" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="18" cy="18" r="16" fill="none" className="stroke-current text-gray-400" strokeWidth="2"></circle>
                     <circle cx="18" cy="18" r="16" fill="none" className="stroke-current text-blue-600" strokeWidth="2" strokeDasharray="100" strokeDashoffset={100 - percentage} strokeLinecap="round"></circle>
