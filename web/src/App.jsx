@@ -2,6 +2,7 @@ import Header from "./components/Header";
 import Form from "./components/Form";
 import PuzzleBoard from "./components/PuzzleBoard";
 import Cards from "./components/Cards";
+import Grid from "./components/Grid";
 import { useState } from "react";
 import { AnimatePresence } from "motion/react";
 
@@ -32,6 +33,7 @@ export default function App() {
           </>
         )}
       </AnimatePresence>
+      <Grid />
       <div className="h-20"></div>
     </div>
   );
