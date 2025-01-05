@@ -4,6 +4,7 @@ import Cards from "./components/Cards";
 import Grid from "./components/Grid";
 import { useState } from "react";
 import { AnimatePresence } from "motion/react";
+import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 export default function App() {
   const [generatedText, setGeneratedText] = useState(null);
@@ -27,37 +28,41 @@ export default function App() {
   };
 
   return (
-    <div className="bg-gray-800 h-screen overflow-y-scroll">
-      <Header />
-      <Form onCategorizeSuccess={handleCategorizeSuccess} />
-      <AnimatePresence>
-        {generatedText && (
-          <>
-            <Cards
-              generatedText={generatedText}
-              puzzlePieces={puzzlePieces}
-              setPuzzlePieces={setPuzzlePieces}
-            />
-            <PuzzleBoard
-              puzzlePieces={puzzlePieces}
-              setPuzzlePieces={setPuzzlePieces}
-              isDetailsLoading={isDetailsLoading}
-              setIsDetailsLoading={setIsDetailsLoading}
-              handleStreamedData={handleStreamedData}
-              setStreamedData={setProjectDetails}
-              sentence={sentence}
-              setSentence={setSentence}
-            />
-          </>
-        )}
-      </AnimatePresence>
-      <Grid
-        projectDetails={projectDetails}
-        sentence={sentence}
-        isDetailsLoading={isDetailsLoading}
-      />
+    <div className="bg-gray-800 h-screen flex relative">
+      <Sidebar />
 
-      <div className="h-20"></div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="flex flex-col w-full">
+          <Form onCategorizeSuccess={handleCategorizeSuccess} />
+          <AnimatePresence>
+            {generatedText && (
+              <>
+                <Cards
+                  generatedText={generatedText}
+                  puzzlePieces={puzzlePieces}
+                  setPuzzlePieces={setPuzzlePieces}
+                />
+                <PuzzleBoard
+                  puzzlePieces={puzzlePieces}
+                  setPuzzlePieces={setPuzzlePieces}
+                  isDetailsLoading={isDetailsLoading}
+                  setIsDetailsLoading={setIsDetailsLoading}
+                  handleStreamedData={handleStreamedData}
+                  setStreamedData={setProjectDetails}
+                  sentence={sentence}
+                  setSentence={setSentence}
+                />
+              </>
+            )}
+          </AnimatePresence>
+          <Grid
+            projectDetails={projectDetails}
+            sentence={sentence}
+            isDetailsLoading={isDetailsLoading}
+          />
+          <div className="h-20"></div>
+        </div>
+      </div>
     </div>
   );
 }

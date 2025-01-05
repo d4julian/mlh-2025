@@ -200,34 +200,6 @@ export default function PuzzleBoard({
     );
   };
   const handleMouseUp = () => {
-    if (activePiece && trashRef.current) {
-      const trashBounds = trashRef.current.getBoundingClientRect();
-      const pieceBounds = {
-        x: activePiece.x,
-        y: activePiece.y,
-        width: getPieceWidth(),
-        height: getPieceWidth() * 0.95,
-      };
-
-      // Check if the piece overlaps the TRASH area
-      const isOverTrash =
-        pieceBounds.x + pieceBounds.width > trashBounds.left &&
-        pieceBounds.x < trashBounds.right &&
-        pieceBounds.y + pieceBounds.height > trashBounds.top &&
-        pieceBounds.y < trashBounds.bottom;
-
-      if (isOverTrash) {
-        // Remove the piece
-        setPuzzlePieces((prevPieces) =>
-          prevPieces.filter((piece) => piece.id !== activePiece.id)
-        );
-
-        setDisabledItems((prev) =>
-          prev.filter((item) => item !== activePiece.text)
-        );
-      }
-    }
-
     setActivePiece(null); // Clear active piece
   };
   return (

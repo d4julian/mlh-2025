@@ -5,8 +5,6 @@ export default function Cards({
   puzzlePieces,
   setPuzzlePieces,
   generatedText,
-  disabledItems,
-  setDisabledItems,
 }) {
   if (!generatedText) return null;
 
@@ -73,11 +71,8 @@ export default function Cards({
                               : "white",
                         },
                       ]);
-                      setDisabledItems((prev) => [...prev, item]); // Mark as disabled
-                      e.target.disabled = true;
                     }}
                     key={i}
-                    disabled={disabledItems.includes(item)}
                     className="bg-white border rounded-md py-1 text-center hover:bg-purple-200 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed px-2"
                   >
                     {item}
