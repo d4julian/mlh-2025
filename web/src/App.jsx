@@ -58,14 +58,6 @@ export default function App() {
         isDetailsLoading={isDetailsLoading}
       />
 
-      <button
-        onClick={() => {
-          console.log(projectDetails);
-        }}
-      >
-        Test
-      </button>
-
       <div className="h-20"></div>
     </div>
   );

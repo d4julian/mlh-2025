@@ -65,45 +65,6 @@ async def generate_text(request: PromptRequest):
     print(f"[LOG] Received prompt: {request.prompt}")  # Log the incoming prompt
 
     try:
-        # For testing purposes, we'll return a dummy response
-        return JSONResponse(content=json.loads("""
-        {
-    "Frameworks/Tech Stack": [
-        "React",
-        "Angular",
-        "Vue.js",
-        "Django",
-        "Flask",
-        "Laravel",
-        "Ruby on Rails",
-        "Express.js",
-        "Nest.js",
-        "Svelte"
-    ],
-    "Functionality/Features": [
-        "User authentication and authorization",
-        "Real-time data updates",
-        "E-commerce functionality",
-        "Social media integration",
-        "Personalized recommendations",
-        "Real-time messaging",
-        "File sharing and storage",
-        "Virtual reality and augmented reality",
-        "Voice assistants",
-        "Artificial intelligence and machine learning"
-    ],
-    "Purposes": [
-        "To create a user-friendly and engaging online experience",
-        "To provide a seamless and secure online transactional process",
-        "To enable real-time communication and collaboration among users",
-        "To offer personalized and relevant content to users",
-        "To create a platform for social networking and community building",
-        "To facilitate the development of virtual and augmented reality applications",
-        "To enable the creation of voice-activated and gesture-controlled interfaces",
-        "To provide a platform for artificial intelligence and machine learning applications",
-        "To create a secure and reliable online storage and sharing service"
-    ]
-}"""))
         result = categorize.categorize_prompt(request.prompt)
         return JSONResponse(content=result)
     except Exception as e:
