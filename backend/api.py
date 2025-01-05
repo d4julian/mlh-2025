@@ -1,11 +1,12 @@
 from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel
 from typing import List, Optional, Dict
 import os
 from datetime import datetime
 import json
+
 
 # Import your existing modules
 # Adjust these imports based on your actual module structure
@@ -13,6 +14,7 @@ import json
 from sentiment import Sentiment  # Your sentiment analysis
 from generate_wireframe import GenerateWireframe  # Your image generation
 from categorize import Categorize  # Your LLaMA model
+from details import Details
 
 # Add your LLaMA model import here
 
@@ -21,6 +23,7 @@ app = FastAPI()
 sentiment = Sentiment()
 generate = GenerateWireframe()
 categorize = Categorize()
+details = Details()
 
 # Configure CORS
 app.add_middleware(
@@ -153,6 +156,14 @@ async def get_image(prompt: str):
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="Image not found")
     return FileResponse(path)
+
+@app.post("/api/analyze/details")
+async def analyze_project_details(request: AnalysisRequest):
+    try:
+        result = details.generate_response(request.text)
+        return StreamingResponse(result, media_type="application/json")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # Health Check

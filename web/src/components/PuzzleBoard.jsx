@@ -8,10 +8,42 @@ const getPieceWidth = () => {
   return (piece?.clientWidth || 400) - 84;
 };
 
-export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
+export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces, isDetailsLoading, setIsDetailsLoading, handleStreamedData, sentence, setSentence}) {
   const [activePiece, setActivePiece] = useState(null);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [sentence, setSentence] = useState("");
+
+  const handleProjectGeneration = async () => {
+    setIsDetailsLoading(true);
+    try {
+      const response = await fetch("http://localhost:8000/api/analyze/details", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ "text": sentence }),
+      });
+
+      const reader = response.body.getReader();
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const chunk = new TextDecoder().decode(value);
+        try {
+          const jsonData = JSON.parse(chunk);
+          console.log(jsonData);
+          handleStreamedData(jsonData);
+        } catch (error) {
+          console.error("Error parsing chunk:", error);
+        }
+      }
+    } catch (error) {
+      console.error("Error generating project details:", error);
+    } finally {
+      setIsDetailsLoading(false);
+    }
+  };
 
   const constructOrderedSentence = (pieces) => {
     if (!pieces.length) return "";
@@ -178,8 +210,16 @@ export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces }) {
             onMouseDown={(e) => handleMouseDown(e, piece)}
           />
         ))}
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-900 text-gray-50">
-          {sentence}
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-900 text-gray-50 flex justify-between items-center">
+          <div>{sentence}</div>
+          <button 
+            type="button" 
+            className="px-8 py-3 font-semibold rounded bg-violet-600 hover:bg-violet-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isDetailsLoading}
+            onClick={handleProjectGeneration}
+          >
+            Generate Project
+          </button>
         </div>
       </div>
     </motion.div>

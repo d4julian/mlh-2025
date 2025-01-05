@@ -9,6 +9,13 @@ import { AnimatePresence } from "motion/react";
 export default function App() {
   const [generatedText, setGeneratedText] = useState(null);
   const [puzzlePieces, setPuzzlePieces] = useState([]);
+  const [isDetailsLoading, setIsDetailsLoading] = useState(false);
+  const [projectDetails, setProjectDetails] = useState([]);
+  const [sentence, setSentence] = useState("");
+
+  const handleStreamedData = (data) => {
+    setProjectDetails(() => [...projectDetails, data]);
+  }
 
   const handleCategorizeSuccess = (data) => {
     setGeneratedText(data);
@@ -29,11 +36,17 @@ export default function App() {
             <PuzzleBoard
               puzzlePieces={puzzlePieces}
               setPuzzlePieces={setPuzzlePieces}
+              isDetailsLoading={isDetailsLoading}
+              setIsDetailsLoading={setIsDetailsLoading}
+              handleStreamedData={handleStreamedData}
+              sentence={sentence}
+              setSentence={setSentence}
             />
           </>
         )}
       </AnimatePresence>
       <Grid />
+    
       <div className="h-20"></div>
     </div>
   );
