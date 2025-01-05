@@ -8,7 +8,6 @@ export default function Cards({
   disabledItems,
   setDisabledItems,
 }) {
-
   if (!generatedText) return null;
 
   const container = {

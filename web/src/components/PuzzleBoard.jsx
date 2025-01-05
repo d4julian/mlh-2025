@@ -11,7 +11,6 @@ const getPieceWidth = () => {
 export default function PuzzleBoard({
   puzzlePieces,
   setPuzzlePieces,
-  disabledItems,
   setDisabledItems,
 }) {
   const [activePiece, setActivePiece] = useState(null);
@@ -212,7 +211,7 @@ export default function PuzzleBoard({
           />
         ))}
         <div
-          className="absolute right-0 text-white bg-red-500 w-14 h-14 flex items-center justify-center"
+          className="absolute right-0 bottom-20 text-white bg-red-500 w-14 h-14 flex items-center justify-center"
           ref={trashRef}
         >
           &#128465;

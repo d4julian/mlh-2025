@@ -1,9 +1,21 @@
 import React, { useState } from "react";
 import useCategorize from "../hooks/useCategorize";
+import useInsertPrompt from "../hooks/useInsertPrompt";
 
 export default function Form({ onCategorizeSuccess }) {
   const [inputText, setInputText] = useState("");
-  const { fetchCategorize, loading, error } = useCategorize();
+  const [formError, setFormError] = useState(null);
+
+  const {
+    fetchCategorize,
+    loading: categorizeLoading,
+    error: categorizeError,
+  } = useCategorize();
+  const {
+    fetchInsertPrompt,
+    loading: insertLoading,
+    error: insertError,
+  } = useInsertPrompt();
 
   const handleChange = (e) => {
     setInputText(e.target.value);
@@ -11,15 +23,25 @@ export default function Form({ onCategorizeSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormError(null); // Reset form-level error
 
-    const endpoint = "http://127.0.0.1:8000/api/categorize";
+    const categorizeEndpoint = "http://127.0.0.1:8000/api/categorize";
+    const insertDataEndpoint = "http://127.0.0.1:8000/api/data/insert";
 
     try {
-      const data = await fetchCategorize(endpoint, inputText);
+      const data = await fetchCategorize(categorizeEndpoint, inputText);
       console.log("[LOG] fetchCategorize call completed");
       onCategorizeSuccess(data);
     } catch (err) {
       console.error("[ERROR]", err);
+    }
+
+    try {
+      const insertData  = await fetchInsertPrompt(insertDataEndpoint, inputText);
+      console.log("[LOG] insert data call completed");
+    } catch (err) {
+      console.error("[ERROR]", err);
+      setFormError("An error occurred while processing your request.");
     }
   };
 
@@ -52,18 +74,20 @@ export default function Form({ onCategorizeSuccess }) {
             type="button"
             className="px-8 py-3 font-semibold border rounded border-gray-100 text-gray-100 hover:border-violet-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleSubmit}
-            disabled={loading || !inputText}
+            disabled={categorizeLoading || !inputText}
           >
-            {loading ? "Generating..." : "Generate"}
+            {categorizeLoading ? "Generating..." : "Generate"}
           </button>
 
-          {loading && (
+          {categorizeLoading && (
             <div className="w-12 h-12 border-4 border-dashed rounded-full animate-spin border-violet-600" />
           )}
         </fieldset>
       </form>
 
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
+      {categorizeError && (
+        <p style={{ color: "red" }}>Error: {categorizeError}</p>
+      )}
     </section>
   );
 }
