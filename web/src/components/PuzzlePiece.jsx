@@ -12,7 +12,7 @@ export default function PuzzlePiece({ piece, isActive, onMouseDown }) {
     >
       <div className="relative puzzle-piece -mr-24">
         <svg
-          className="h-72"
+          className="h-64"
           style={{ fill: piece.color }}
           id="svg"
           version="1.1"
@@ -65,8 +65,8 @@ export default function PuzzlePiece({ piece, isActive, onMouseDown }) {
           </g>
         </svg>
         <div
-          className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 poppins-medium select-none text-white ${
-            piece.type == 0 ? "text-sm leading-4" : "text-xl"
+          className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 poppins-medium select-none text-white leading-4 ${
+            piece.type == 0 ? "text-sm" : "text-lg"
           }`}
           style={{ zIndex: 1000 }}
         >
