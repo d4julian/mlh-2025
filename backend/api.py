@@ -55,6 +55,10 @@ class AnalysisRequest(BaseModel):
     options: Optional[Dict] = {}
 
 
+class ImageRequest(BaseModel):
+    prompt: str
+
+
 # LLaMA Routes
 @app.post("/api/categorize")
 async def generate_text(request: PromptRequest):
@@ -150,17 +154,32 @@ IMAGE_DIR = "backend/images"
 os.makedirs(IMAGE_DIR, exist_ok=True)
 
 
-@app.get("/api/images/{image_name}")
-async def get_image(prompt: str):
-    path = generate.generate_wireframe(prompt)
-    if not os.path.exists(path):
-        raise HTTPException(status_code=404, detail="Image not found")
-    return FileResponse(path)
+@app.post("/api/images")
+async def get_image(request: ImageRequest):
+    try:
+        # Assuming generate_wireframe is an async function, if not, wrap it with asyncio
+        from asyncio import to_thread
+        
+        # Run the potentially blocking wireframe generation in a separate thread
+        path = await to_thread(generate.generate_wireframe, request.prompt)
+        
+        if not os.path.exists(path):
+            raise HTTPException(status_code=404, detail="Image not found")
+            
+        return FileResponse(
+            path,
+            media_type="image/png",
+            headers={"Cache-Control": "no-cache"}
+        )
+    except Exception as e:
+        print(f"[ERROR] Error generating image: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/analyze/details")
 async def analyze_project_details(request: AnalysisRequest):
     try:
-        result = details.generate_response(request.text)
+        result = details.generate_all_responses(request.text)
         return StreamingResponse(result, media_type="application/json")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

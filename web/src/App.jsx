@@ -10,12 +10,18 @@ export default function App() {
   const [generatedText, setGeneratedText] = useState(null);
   const [puzzlePieces, setPuzzlePieces] = useState([]);
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
-  const [projectDetails, setProjectDetails] = useState([]);
+  const [projectDetails, setProjectDetails] = useState({});
   const [sentence, setSentence] = useState("");
 
-  const handleStreamedData = (data) => {
-    setProjectDetails(() => [...projectDetails, data]);
-  }
+  const handleStreamedData = (jsonData) => {
+    if (jsonData.category && jsonData.update !== undefined) {
+      setProjectDetails((prevDetails) => ({
+        ...prevDetails,
+        [jsonData.category]:
+          (prevDetails[jsonData.category] || "") + jsonData.update,
+      }));
+    }
+  };
 
   const handleCategorizeSuccess = (data) => {
     setGeneratedText(data);
@@ -39,14 +45,27 @@ export default function App() {
               isDetailsLoading={isDetailsLoading}
               setIsDetailsLoading={setIsDetailsLoading}
               handleStreamedData={handleStreamedData}
+              setStreamedData={setProjectDetails}
               sentence={sentence}
               setSentence={setSentence}
             />
           </>
         )}
       </AnimatePresence>
-      <Grid />
-    
+      <Grid
+        projectDetails={projectDetails}
+        sentence={sentence}
+        isDetailsLoading={isDetailsLoading}
+      />
+
+      <button
+        onClick={() => {
+          console.log(projectDetails);
+        }}
+      >
+        Test
+      </button>
+
       <div className="h-20"></div>
     </div>
   );

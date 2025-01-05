@@ -8,34 +8,57 @@ const getPieceWidth = () => {
   return (piece?.clientWidth || 400) - 84;
 };
 
-export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces, isDetailsLoading, setIsDetailsLoading, handleStreamedData, sentence, setSentence}) {
+export default function PuzzleBoard({
+  puzzlePieces,
+  setPuzzlePieces,
+  isDetailsLoading,
+  setIsDetailsLoading,
+  handleStreamedData,
+  setStreamedData,
+  sentence,
+  setSentence,
+}) {
   const [activePiece, setActivePiece] = useState(null);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   const handleProjectGeneration = async () => {
     setIsDetailsLoading(true);
+    setStreamedData({});
     try {
-      const response = await fetch("http://localhost:8000/api/analyze/details", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ "text": sentence }),
-      });
+      const response = await fetch(
+        "http://localhost:8000/api/analyze/details",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: sentence }),
+        }
+      );
 
       const reader = response.body.getReader();
-      
+
       while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        const chunk = new TextDecoder().decode(value);
         try {
-          const jsonData = JSON.parse(chunk);
-          console.log(jsonData);
-          handleStreamedData(jsonData);
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = new TextDecoder().decode(value).trim();
+
+          const jsonStrings = chunk.match(/\{[^}]+\}/g) || [];
+
+          for (const jsonString of jsonStrings) {
+            try {
+              const jsonData = JSON.parse(jsonString);
+              handleStreamedData(jsonData);
+            } catch (innerError) {
+              console.error("Error parsing individual JSON:", innerError);
+            }
+          }
         } catch (error) {
-          console.error("Error parsing chunk:", error);
+          console.log("ERROR: " + new TextDecoder().decode(value));
+          console.error("Error reading streamed data:", error);
+          continue;
         }
       }
     } catch (error) {
@@ -212,8 +235,8 @@ export default function PuzzleBoard({ puzzlePieces, setPuzzlePieces, isDetailsLo
         ))}
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-900 text-gray-50 flex justify-between items-center">
           <div>{sentence}</div>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="px-8 py-3 font-semibold rounded bg-violet-600 hover:bg-violet-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isDetailsLoading}
             onClick={handleProjectGeneration}
