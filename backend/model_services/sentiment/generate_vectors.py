@@ -1,11 +1,15 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
+import os
+
 
 class GenerateVectors:
     def __init__(self):
-        df = pd.read_csv("data.csv")
-        df['success'] = (df['status'] == 'Active').astype(int)
+        script_dir = os.path.dirname(__file__)
+        data_path = os.path.join(script_dir, "data.csv")
+        df = pd.read_csv(data_path)
+        df["success"] = (df["status"] == "Active").astype(int)
         df = df[["long_description", "success"]]
         df.dropna(inplace=True)
 
@@ -13,6 +17,7 @@ class GenerateVectors:
         vectorizer.fit_transform(df["long_description"])
 
         pickle.dump(vectorizer, open("vectorizer.pkl", "wb"))
+
 
 if __name__ == "__main__":
     g = GenerateVectors()
