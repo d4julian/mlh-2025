@@ -1,7 +1,7 @@
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import pickle
-from generate_vectors import GenerateVectors
+from .generate_vectors import GenerateVectors
 import os
 import pandas as pd
 
@@ -10,7 +10,9 @@ class Sentiment:
         if not os.path.exists("vectorizer.pkl"):
             g = GenerateVectors()
         self.vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
-        self.df = pd.read_csv("data.csv")
+        script_dir = os.path.dirname(__file__)
+        data_path = os.path.join(script_dir, "data.csv")
+        self.df = pd.read_csv(data_path)
         self.df['success'] = (self.df['status'] == 'Active').astype(int)
         self.df = self.df[["long_description", "success"]]
         self.df.dropna(inplace=True)
